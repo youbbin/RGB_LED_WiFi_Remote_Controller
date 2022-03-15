@@ -35,8 +35,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         setTitle("RGB LED WiFi Remote Controller");
 
-
-
         // On,Off 토글 버튼 클릭 이벤트
         toggleButton=(ToggleButton) findViewById(R.id.toggleButton);
         toggleButton.setOnClickListener(new View.OnClickListener(){
@@ -70,6 +68,8 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(MainActivity.this,"Send Color",Toast.LENGTH_SHORT).show();
             }
         });
+
+        sendColor(); //앱 시작 시 기본색(연두색)으로 초기화
     }
 
     // 선택한 색상의 RGB 값을 전송
@@ -80,6 +80,7 @@ public class MainActivity extends AppCompatActivity {
         r=Color.red(color);
         g=Color.green(color);
         b=Color.blue(color);
+
         //RGB000000000 형식의 문자열 전송
         String rgb="RGB"+String.format("%03d",r)+String.format("%03d",g)+String.format("%03d",b);
 
