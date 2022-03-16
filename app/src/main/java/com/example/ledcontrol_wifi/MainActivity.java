@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.SeekBar;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
@@ -24,10 +25,11 @@ import okhttp3.Response;
 public class MainActivity extends AppCompatActivity {
 
     ColorPicker picker;
+    SeekBar seekBar;
     ToggleButton toggleButton;
     Button sendButton;
     String serverAddress="192.168.100.21:80"; // 아두이노의 ip주소와 포트번호
-
+    int brightness=100;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +60,18 @@ public class MainActivity extends AppCompatActivity {
         picker.addSaturationBar(saturationBar);
         picker.setShowOldCenterColor(false);
 
+        //led의 세기를 조절하는 시크바
+        seekBar=(SeekBar)findViewById(R.id.seekbar);
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                brightness=seekBar.getProgress(); //brightness : 선택한 밝기 (0~100)
+            }
+
+            public void onStartTrackingTouch(SeekBar seekBar) { }
+            public void onStopTrackingTouch(SeekBar seekBar) { }
+        });
+
         // 전송 버튼 클릭 이벤트
         sendButton=(Button)findViewById(R.id.sendButton);
         sendButton.setOnClickListener(new View.OnClickListener() {
@@ -73,19 +87,24 @@ public class MainActivity extends AppCompatActivity {
 
     // 선택한 색상의 RGB 값을 전송
     public void sendColor(){
-        int color=picker.getColor();
+        int color=picker.getColor(); //ColorPicker에서 선택한 색상 가져옴
         int r,g,b;
 
         r=Color.red(color);
         g=Color.green(color);
         b=Color.blue(color);
 
-        //RGB000000000 형식의 문자열 전송
-        String rgb="RGB"+String.format("%03d",r)+String.format("%03d",g)+String.format("%03d",b);
+        //RGB000000000BRT000 형식의 문자열 전송
+        String str="RGB"+String.format("%03d",r)+String.format("%03d",g)+String.format("%03d",b)
+                +"BRT"+String.format("%03d",brightness);
 
         HttpRequestTask requestTask=new HttpRequestTask(serverAddress);
-        requestTask.execute(rgb);
+        requestTask.execute(str);
     }
+
+
+
+
 
     public class HttpRequestTask extends AsyncTask<String,Void,String> {
         private String serverAddress;
