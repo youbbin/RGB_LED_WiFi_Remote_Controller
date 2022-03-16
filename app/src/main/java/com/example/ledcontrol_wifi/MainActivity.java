@@ -57,7 +57,6 @@ public class MainActivity extends AppCompatActivity {
         SaturationBar saturationBar=(SaturationBar) findViewById(R.id.saturationBar);
         picker.addSaturationBar(saturationBar);
         picker.setShowOldCenterColor(false);
-        //picker.getColor(); //스크롤을 돌려서 색상값을 가져옴
 
         // 전송 버튼 클릭 이벤트
         sendButton=(Button)findViewById(R.id.sendButton);

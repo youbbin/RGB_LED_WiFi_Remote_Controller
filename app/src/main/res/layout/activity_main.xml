@@ -26,6 +26,21 @@
         android:layout_height="wrap_content"
         android:id="@+id/saturationBar"/>
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="LED Brightness"
+        android:layout_marginTop="30dp"/>
+
+    <SeekBar
+        android:id="@+id/seekbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="65dp"
+        android:layout_marginLeft="65dp"
+        android:progress="100"
+        android:max="100"/>
+
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
