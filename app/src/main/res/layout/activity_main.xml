@@ -34,12 +34,10 @@
 
     <SeekBar
         android:id="@+id/seekbar"
-        android:layout_width="match_parent"
+        android:layout_width="280dp"
         android:layout_height="wrap_content"
-        android:layout_marginRight="65dp"
-        android:layout_marginLeft="65dp"
         android:progress="100"
-        android:max="100"/>
+        android:max="100" />
 
     <LinearLayout
         android:layout_width="wrap_content"
