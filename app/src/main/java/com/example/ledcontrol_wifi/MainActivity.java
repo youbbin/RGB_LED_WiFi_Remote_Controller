@@ -3,12 +3,15 @@ package com.example.ledcontrol_wifi;
 import androidx.appcompat.app.AppCompatActivity;
 
 
+import android.app.Dialog;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.Toast;
 import android.widget.ToggleButton;
@@ -28,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
     SeekBar seekBar;
     ToggleButton toggleButton;
     Button sendButton;
+    Dialog dialog;
     String serverAddress="192.168.100.21:80"; // 아두이노의 ip주소와 포트번호
     int brightness=100;
 
@@ -82,6 +86,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        dialog=new Dialog(this);
         sendColor(); //앱 시작 시 기본색(연두색)으로 초기화
     }
 
@@ -101,9 +106,6 @@ public class MainActivity extends AppCompatActivity {
         HttpRequestTask requestTask=new HttpRequestTask(serverAddress);
         requestTask.execute(str);
     }
-
-
-
 
 
     public class HttpRequestTask extends AsyncTask<String,Void,String> {
@@ -138,6 +140,15 @@ public class MainActivity extends AppCompatActivity {
 
         protected void onCancelled(){
             super.onCancelled();
+        }
+
+        private void openDialog(){
+            dialog.setContentView(R.layout.dialog);
+            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+
+            ImageView imageViewCLose=dialog.findViewById(R.id.imageViewClose);
+            Button button=dialog.findViewById(R.id.btnOk);
+            dialog.show();
         }
     }
 }
