@@ -18,7 +18,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Saturation"
-        android:layout_marginTop="30dp"/>
+        android:layout_marginTop="5dp"/>
 
     <com.larswerkman.holocolorpicker.SaturationBar
         android:layout_width="wrap_content"
@@ -29,7 +29,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="LED Brightness"
-        android:layout_marginTop="30dp"/>
+        android:layout_marginTop="10dp"/>
 
     <SeekBar
         android:id="@+id/seekbar"
@@ -42,32 +42,39 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_marginTop="20dp">
+        android:layout_marginTop="20dp"
+        android:gravity="center">
 
         <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="SEND COLOR"
-            android:backgroundTint="#dcdcdc"
-            android:textColor="@color/black"
             android:id="@+id/sendButton"
-            android:layout_marginRight="10dp"/>
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Illumination"
+            android:layout_width="150dp"
+            android:layout_height="60dp"
+            android:layout_marginRight="10dp"
             android:backgroundTint="#dcdcdc"
-            android:textColor="@color/black"
+            android:text="SEND COLOR"
+            android:textColor="@color/black" />
+
+        <Button
+            android:id="@+id/illuButton"
+            android:layout_width="150dp"
+            android:layout_height="60dp"
             android:layout_marginLeft="10dp"
-            android:id="@+id/illuButton"/>
+            android:backgroundTint="#dcdcdc"
+            android:text="UPDATE ILLUMINANCE"
+            android:textColor="@color/black" />
 
     </LinearLayout>
     <ToggleButton
         android:id="@+id/toggleButton"
-        android:layout_width="297dp"
+        android:layout_width="320dp"
         android:layout_height="wrap_content"
         android:textOff="LED OFF"
         android:textOn="LED ON"
         android:layout_marginTop="10dp"/>
 
+    <WebView
+        android:id="@+id/webView"
+        android:layout_width="150dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="10dp" />
 </LinearLayout>

@@ -11,6 +11,9 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.SeekBar;
@@ -38,8 +41,9 @@ public class MainActivity extends AppCompatActivity {
     Button sendButton;
     Button illuButton;
     Dialog dialog;
+    WebView webView;
     String serverAddress="192.168.100.21:80"; // 아두이노의 ip주소와 포트번호
-    TextView textView;
+
     int brightness=100;
 
     @Override
@@ -48,6 +52,13 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         setTitle("RGB LED WiFi Remote Controller");
         dialog=new Dialog(this);
+        webView=(WebView)findViewById(R.id.webView);
+        webView.setWebViewClient(new MyWebViewClient());
+
+        WebSettings webSet= webView.getSettings();
+        webSet.setBuiltInZoomControls(true);
+        webSet.setJavaScriptEnabled(true);
+        webView.loadUrl("http://"+serverAddress);
 
         // On,Off 토글 버튼 클릭 이벤트
         toggleButton=(ToggleButton) findViewById(R.id.toggleButton);
@@ -94,25 +105,19 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // ILLUMINATION 버튼 클릭 이벤트
-        textView=(TextView)findViewById(R.id.textView2);
+        // Update Illuminance 버튼 클릭 이벤트
+
         illuButton=(Button)findViewById(R.id.illuButton);
         illuButton.setOnClickListener(new View.OnClickListener() {
+
             @Override
             public void onClick(View v) {
+
                 dialog.setContentView(R.layout.dialog);
                 dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
-                try {
-                    textView.setText(getIlm(requestIlm()));
-                } catch (ExecutionException e) {
-                    e.printStackTrace();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
                 ImageView imageViewClose=(ImageView) dialog.findViewById(R.id.imageViewClose);
                 Button buttonOk=(Button) dialog.findViewById(R.id.buttonOk);
-
 
                 imageViewClose.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -128,13 +133,18 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
 
-                dialog.show();
-                dialog.setOwnerActivity(MainActivity.this);
-                dialog.setCanceledOnTouchOutside(false);
+                webView.loadUrl("http://"+serverAddress);
             }
         });
 
         sendColor(); //앱 시작 시 기본색(연두색)으로 초기화
+    }
+
+    class MyWebViewClient extends android.webkit.WebViewClient {
+        @Override
+        public boolean shouldOverrideUrlLoading(WebView view, String url) {
+            return super.shouldOverrideUrlLoading(view, url);
+        }
     }
 
     // 선택한 색상의 RGB 값을 전송
@@ -154,20 +164,6 @@ public class MainActivity extends AppCompatActivity {
         requestTask.execute(str);
     }
 
-    //조도 요청
-    public HttpRequestTask requestIlm(){
-        String str="ILM";
-        HttpRequestTask requestTask=new HttpRequestTask(serverAddress);
-        requestTask.execute(str);
-        return requestTask;
-    }
-
-    public String getIlm(HttpRequestTask requestTask) throws ExecutionException, InterruptedException {
-        String ilm="";
-        ilm=requestTask.get();
-        return ilm;
-    }
-
 
     public class HttpRequestTask extends AsyncTask<String,Void,String> {
         private String serverAddress;
@@ -185,19 +181,7 @@ public class MainActivity extends AppCompatActivity {
             Request request=new Request.Builder()
                     .url(url)
                     .build();
-            client.newCall(request).enqueue(new Callback() {
-                @Override
-                public void onFailure(Call call, IOException e) {
-                    e.printStackTrace();
-                }
 
-                @Override
-                public void onResponse(Call call, Response response) throws IOException {
-                    if(response.isSuccessful()){
-                        String myResponse=response.body().string();
-                    }
-                }
-            });
             try{
                 Response response=client.newCall(request).execute();
                 return null;
