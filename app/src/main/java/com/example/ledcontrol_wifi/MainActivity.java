@@ -3,6 +3,7 @@ package com.example.ledcontrol_wifi;
 import androidx.appcompat.app.AppCompatActivity;
 
 
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -31,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
     SeekBar seekBar;
     ToggleButton toggleButton;
     Button sendButton;
+    Button illuButton;
     Dialog dialog;
     String serverAddress="192.168.100.21:80"; // 아두이노의 ip주소와 포트번호
     int brightness=100;
@@ -40,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         setTitle("RGB LED WiFi Remote Controller");
+        dialog=new Dialog(this);
 
         // On,Off 토글 버튼 클릭 이벤트
         toggleButton=(ToggleButton) findViewById(R.id.toggleButton);
@@ -76,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
             public void onStopTrackingTouch(SeekBar seekBar) { }
         });
 
-        // 전송 버튼 클릭 이벤트
+        // SEND COLOR 버튼 클릭 이벤트
         sendButton=(Button)findViewById(R.id.sendButton);
         sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -86,7 +89,38 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        dialog=new Dialog(this);
+        // ILLUMINATION 버튼 클릭 이벤트
+        illuButton=(Button)findViewById(R.id.illuButton);
+        illuButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.setContentView(R.layout.dialog);
+                dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+
+                ImageView imageViewClose=(ImageView) dialog.findViewById(R.id.imageViewClose);
+                Button buttonOk=(Button) dialog.findViewById(R.id.buttonOk);
+
+
+                imageViewClose.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialog.dismiss();
+                    }
+                });
+
+                buttonOk.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialog.dismiss();
+                    }
+                });
+
+                dialog.show();
+                dialog.setOwnerActivity(MainActivity.this);
+                dialog.setCanceledOnTouchOutside(false);
+            }
+        });
+
         sendColor(); //앱 시작 시 기본색(연두색)으로 초기화
     }
 
@@ -142,13 +176,6 @@ public class MainActivity extends AppCompatActivity {
             super.onCancelled();
         }
 
-        private void openDialog(){
-            dialog.setContentView(R.layout.dialog);
-            dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
-            ImageView imageViewCLose=dialog.findViewById(R.id.imageViewClose);
-            Button button=dialog.findViewById(R.id.btnOk);
-            dialog.show();
-        }
     }
 }
