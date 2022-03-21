@@ -14,6 +14,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.SeekBar;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
@@ -21,7 +22,10 @@ import com.larswerkman.holocolorpicker.ColorPicker;
 import com.larswerkman.holocolorpicker.SaturationBar;
 
 import java.io.IOException;
+import java.util.concurrent.ExecutionException;
 
+import okhttp3.Call;
+import okhttp3.Callback;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -35,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
     Button illuButton;
     Dialog dialog;
     String serverAddress="192.168.100.21:80"; // 아두이노의 ip주소와 포트번호
+    TextView textView;
     int brightness=100;
 
     @Override
@@ -90,6 +95,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // ILLUMINATION 버튼 클릭 이벤트
+        textView=(TextView)findViewById(R.id.textView2);
         illuButton=(Button)findViewById(R.id.illuButton);
         illuButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -97,6 +103,13 @@ public class MainActivity extends AppCompatActivity {
                 dialog.setContentView(R.layout.dialog);
                 dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
+                try {
+                    textView.setText(getIlm(requestIlm()));
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
                 ImageView imageViewClose=(ImageView) dialog.findViewById(R.id.imageViewClose);
                 Button buttonOk=(Button) dialog.findViewById(R.id.buttonOk);
 
@@ -141,6 +154,20 @@ public class MainActivity extends AppCompatActivity {
         requestTask.execute(str);
     }
 
+    //조도 요청
+    public HttpRequestTask requestIlm(){
+        String str="ILM";
+        HttpRequestTask requestTask=new HttpRequestTask(serverAddress);
+        requestTask.execute(str);
+        return requestTask;
+    }
+
+    public String getIlm(HttpRequestTask requestTask) throws ExecutionException, InterruptedException {
+        String ilm="";
+        ilm=requestTask.get();
+        return ilm;
+    }
+
 
     public class HttpRequestTask extends AsyncTask<String,Void,String> {
         private String serverAddress;
@@ -148,7 +175,6 @@ public class MainActivity extends AppCompatActivity {
         public HttpRequestTask(String serverAddress){
             this.serverAddress=serverAddress;
         }
-
 
         @Override
         protected String doInBackground(String... params) {
@@ -159,6 +185,19 @@ public class MainActivity extends AppCompatActivity {
             Request request=new Request.Builder()
                     .url(url)
                     .build();
+            client.newCall(request).enqueue(new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    e.printStackTrace();
+                }
+
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    if(response.isSuccessful()){
+                        String myResponse=response.body().string();
+                    }
+                }
+            });
             try{
                 Response response=client.newCall(request).execute();
                 return null;
@@ -175,7 +214,5 @@ public class MainActivity extends AppCompatActivity {
         protected void onCancelled(){
             super.onCancelled();
         }
-
-
     }
 }
