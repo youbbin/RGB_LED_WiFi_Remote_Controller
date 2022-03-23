@@ -81,11 +81,4 @@
         android:layout_margin="16dp"
         android:src="@drawable/ic_baseline_refresh_24" />
 
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="49dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        app:srcCompat="@drawable/ic_baseline_arrow_forward_24" />
-
 </LinearLayout>
