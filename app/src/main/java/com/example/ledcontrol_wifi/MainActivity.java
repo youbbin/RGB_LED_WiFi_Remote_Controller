@@ -21,6 +21,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.larswerkman.holocolorpicker.ColorPicker;
 import com.larswerkman.holocolorpicker.SaturationBar;
 
@@ -39,11 +40,10 @@ public class MainActivity extends AppCompatActivity {
     SeekBar seekBar;
     ToggleButton toggleButton;
     Button sendButton;
-    Button illuButton;
-    Dialog dialog;
+    FloatingActionButton refreshButton;
     WebView webView;
     String serverAddress="192.168.100.21:80"; // 아두이노의 ip주소와 포트번호
-
+    HttpRequestTask requestTask;
     int brightness=100;
 
     @Override
@@ -51,7 +51,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         setTitle("RGB LED WiFi Remote Controller");
-        dialog=new Dialog(this);
+        requestTask=new HttpRequestTask(serverAddress);
+
+        // 조도를 WebView로 출력 (아두이노가 웹페이지에 조도 전송)
         webView=(WebView)findViewById(R.id.webView);
         webView.setWebViewClient(new MyWebViewClient());
 
@@ -73,7 +75,8 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(MainActivity.this,"OFF",Toast.LENGTH_SHORT).show();
                     ledStatus="Off";
                 }
-                HttpRequestTask requestTask=new HttpRequestTask(serverAddress);
+                // 아두이노로 전송
+                requestTask=new HttpRequestTask(serverAddress);
                 requestTask.execute(ledStatus);
             }
         });
@@ -105,34 +108,12 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // Update Illuminance 버튼 클릭 이벤트
-
-        illuButton=(Button)findViewById(R.id.illuButton);
-        illuButton.setOnClickListener(new View.OnClickListener() {
-
+        // 새로고침 버튼 클릭 이벤트
+        refreshButton=(FloatingActionButton) findViewById(R.id.floatingButton);
+        refreshButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                dialog.setContentView(R.layout.dialog);
-                dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-
-                ImageView imageViewClose=(ImageView) dialog.findViewById(R.id.imageViewClose);
-                Button buttonOk=(Button) dialog.findViewById(R.id.buttonOk);
-
-                imageViewClose.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        dialog.dismiss();
-                    }
-                });
-
-                buttonOk.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        dialog.dismiss();
-                    }
-                });
-
+                Toast.makeText(MainActivity.this,"Update Illuminance",Toast.LENGTH_SHORT).show();
                 webView.loadUrl("http://"+serverAddress);
             }
         });
@@ -160,14 +141,13 @@ public class MainActivity extends AppCompatActivity {
         String str="RGB"+String.format("%03d",r)+String.format("%03d",g)+String.format("%03d",b)
                 +"BRT"+String.format("%03d",brightness);
 
-        HttpRequestTask requestTask=new HttpRequestTask(serverAddress);
+        requestTask=new HttpRequestTask(serverAddress);
         requestTask.execute(str);
     }
 
 
     public class HttpRequestTask extends AsyncTask<String,Void,String> {
         private String serverAddress;
-
         public HttpRequestTask(String serverAddress){
             this.serverAddress=serverAddress;
         }
